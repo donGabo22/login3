@@ -1,4 +1,3 @@
-//meal.dart
 class Meal {
   final String id;
   final String title;
@@ -18,6 +17,16 @@ class Meal {
     required this.ingredients,
   });
 
+  // Constructor sin argumentos
+  Meal.empty()
+      : id = '',
+        title = '',
+        category = '',
+        area = '',
+        instructions = '',
+        thumbnail = '',
+        ingredients = [];
+
   factory Meal.fromJson(Map<String, dynamic> json) => Meal(
         id: json['idMeal'] ?? '',
         title: json['strMeal'] ?? '',
@@ -31,5 +40,4 @@ class Meal {
         ).where((ingredient) => ingredient.isNotEmpty)),
       );
 }
-
 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:login3/models/meal.dart';
+import 'package:login3/recipe_detail_screen.dart';
 import 'package:login3/recipe_list_page.dart';
 import 'package:login3/services/auth_services.dart';
+import 'package:login3/services/meal_service.dart';
 import 'package:login3/services/services.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +15,34 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final MealService _mealService = MealService();
+  Meal _mealOfTheDay = Meal(
+    id: '52772', // El ID de la comida del día
+    title: 'Meal of the Day', // Un valor ficticio para el título
+    category: 'Main Course', // Un valor ficticio para la categoría
+    area: 'International', // Un valor ficticio para el área
+    instructions: 'Follow the instructions on the recipe.', // Un valor ficticio para las instrucciones
+    thumbnail: 'https://www.themealdb.com/images/media/meals/wvqpwt1511727313.jpg', // URL de la imagen de la comida del día
+    ingredients: ['Ingredient 1', 'Ingredient 2'], // Una lista ficticia de ingredientes
+  );
   int currentPageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMealOfTheDay();
+  }
+
+  void _loadMealOfTheDay() async {
+    try {
+      final meal = await _mealService.getMealById(_mealOfTheDay.id);
+      setState(() {
+        _mealOfTheDay = meal;
+      });
+    } catch (e) {
+      print('Error loading meal of the day: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +92,28 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (pageIndex) {
       case 0:
         return Container(
-          color: Colors.red,
+          color: Colors.orange, // Cambié el color a café
           alignment: Alignment.center,
-          child: const Text('Page 1: Aquí debería abrir la página principal con un cardsweeper y una receta del día'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('La comida del Día!'),
+              SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  _navigateToRecipeDetail(context, _mealOfTheDay);
+                },
+                child: Card(
+                  child: Column(
+                    children: [
+                      Image.network(_mealOfTheDay.thumbnail),
+                      Text(_mealOfTheDay.title),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       case 1:
         return RecipeListPage(); // Aquí abre la página de lista de recetas
@@ -77,5 +126,14 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return Container();
     }
+  }
+
+  void _navigateToRecipeDetail(BuildContext context, Meal meal) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecipeDetailScreen(meal: meal),
+      ),
+    );
   }
 }
