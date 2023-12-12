@@ -138,20 +138,16 @@ class MealService {
     }
   }
 
-
-
   Future<List<Meal>> getRandomMealsBatch(int count) async {
     try {
-      final response =
-          await http.get(Uri.parse(apiUrl + 'random.php?limit=$count'));
+      final response = await http.get(Uri.parse('$apiUrl/random.php?limit=$count'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final List<dynamic> meals = data['meals'];
         return meals.map((meal) => Meal.fromJson(meal)).toList();
       } else {
-        print(
-            'Failed to load random meals. Status Code: ${response.statusCode}');
+        print('Failed to load random meals. Status Code: ${response.statusCode}');
         print('Error body: ${response.body}');
         throw Exception('Failed to load random meals');
       }

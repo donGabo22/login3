@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:login3/card_swiper.dart';
 import 'package:login3/models/meal.dart';
-import 'package:login3/recipe_detail_screen.dart';
 import 'package:login3/recipe_list_page.dart';
 import 'package:login3/services/auth_services.dart';
 import 'package:login3/services/meal_service.dart';
@@ -16,31 +16,25 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final MealService _mealService = MealService();
-  Meal _mealOfTheDay = Meal(
-    id: '52772', // El ID de la comida del día
-    title: 'Meal of the Day', // Un valor ficticio para el título
-    category: 'Main Course', // Un valor ficticio para la categoría
-    area: 'International', // Un valor ficticio para el área
-    instructions: 'Follow the instructions on the recipe.', // Un valor ficticio para las instrucciones
-    thumbnail: 'https://www.themealdb.com/images/media/meals/wvqpwt1511727313.jpg', // URL de la imagen de la comida del día
-    ingredients: ['Ingredient 1', 'Ingredient 2'], // Una lista ficticia de ingredientes
-  );
+  Meal _mealOfTheDay = Meal.empty();
+  List<Meal> _randomMeals = [];
   int currentPageIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadMealOfTheDay();
+    _loadRandomMeals();
   }
 
-  void _loadMealOfTheDay() async {
+  void _loadRandomMeals() async {
     try {
-      final meal = await _mealService.getMealById(_mealOfTheDay.id);
+      final randomMeals = await _mealService.getRandomMealsBatch(10);
       setState(() {
-        _mealOfTheDay = meal;
+        _mealOfTheDay = randomMeals.isNotEmpty ? randomMeals[0] : Meal.empty();
+        _randomMeals = randomMeals;
       });
     } catch (e) {
-      print('Error loading meal of the day: $e');
+      print('Error loading random meals: $e');
     }
   }
 
@@ -89,50 +83,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPage(int pageIndex) {
-    switch (pageIndex) {
-      case 0:
-        return Container(
-          color: Colors.orange, // Cambié el color a café
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('La comida del Día!'),
-              SizedBox(height: 16),
-              GestureDetector(
-                onTap: () {
-                  _navigateToRecipeDetail(context, _mealOfTheDay);
-                },
-                child: Card(
-                  child: Column(
-                    children: [
-                      Image.network(_mealOfTheDay.thumbnail),
-                      Text(_mealOfTheDay.title),
-                    ],
-                  ),
-                ),
+    return Container(
+      color: pageIndex == 0 ? Colors.orange : (pageIndex == 1 ? Colors.orange : Colors.blue),
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (pageIndex == 0)
+            Expanded(
+              child: Column(
+                children: [
+                  CardSwiper(meals: _randomMeals),
+                ],
               ),
-            ],
-          ),
-        );
-      case 1:
-        return RecipeListPage(); // Aquí abre la página de lista de recetas
-      case 2:
-        return Container(
-          color: Colors.blue,
-          alignment: Alignment.center,
-          child: const Text('Page 3: Aquí debería abrir un buscador y filtros'),
-        );
-      default:
-        return Container();
-    }
-  }
-
-  void _navigateToRecipeDetail(BuildContext context, Meal meal) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RecipeDetailScreen(meal: meal),
+            ),
+          if (pageIndex == 1)
+            Expanded(
+              child: RecipeListPage(),
+            ),
+          if (pageIndex == 2)
+            const Text('Page 3: Aquí debería abrir un buscador y filtros'),
+        ],
       ),
     );
   }

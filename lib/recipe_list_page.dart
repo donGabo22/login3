@@ -63,68 +63,60 @@ class _RecipeListPageState extends State<RecipeListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Lista de recetas'),
-        backgroundColor: Colors.brown,
-      ),
-      backgroundColor: Colors.orange,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 16.0),
-            const Text(
-              '¿Buscas algo en especial?',
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
+    return Container(
+      color: Colors.orange,
+      child: Column(
+        children: [
+          const SizedBox(height: 16.0),
+          const Text(
+            '¿Buscas algo en especial?',
+            style: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8.0),
-            DropdownButton<String>(
-              value: _selectedCategory,
-              items: <String>['Beef', 'Chicken', 'Dessert', 'Seafood']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  _filterByCategory(newValue);
-                }
-              },
-            ),
-            const SizedBox(height: 8.0),
-            _meals.isNotEmpty
-                ? Container(
-                    height: MediaQuery.of(context).size.height - 240.0,
-                    child: ListView.builder(
-                      itemCount: _meals.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          contentPadding: EdgeInsets.symmetric(vertical: 8.0),
-                          title: Text(_meals[index].title),
-                          subtitle: Text(_meals[index].category),
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.network(
-                              _meals[index].thumbnail,
-                              height: 80.0,
-                              width: 80.0,
-                            ),
+          ),
+          const SizedBox(height: 8.0),
+          DropdownButton<String>(
+            value: _selectedCategory,
+            items: <String>['Beef', 'Chicken', 'Dessert', 'Seafood']
+                .map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                _filterByCategory(newValue);
+              }
+            },
+          ),
+          const SizedBox(height: 8.0),
+          _meals.isNotEmpty
+              ? Expanded(
+                  child: ListView(
+                    children: _meals.map((meal) {
+                      return ListTile(
+                        contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                        title: Text(meal.title),
+                        subtitle: Text(meal.category),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            meal.thumbnail,
+                            height: 80.0,
+                            width: 80.0,
                           ),
-                          onTap: () {
-                            _navigateToRecipeDetail(_meals[index]);
-                          },
-                        );
-                      },
-                    ),
-                  )
-                : const Text('No se encontraron recetas.'),
-          ],
-        ),
+                        ),
+                        onTap: () {
+                          _navigateToRecipeDetail(meal);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                )
+              : const Text('No se encontraron recetas.'),
+        ],
       ),
     );
   }
