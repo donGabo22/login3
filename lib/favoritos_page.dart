@@ -1,5 +1,6 @@
 // // FavoritosPage.dart
 // import 'package:flutter/material.dart';
+// import 'package:login3/models/Favorito.dart';
 // import 'package:login3/models/databaseHelper.dart';
 
 // class FavoritosPage extends StatefulWidget {
@@ -55,3 +56,49 @@
 //     );
 //   }
 // }
+
+// favoritos_page.dart
+import 'package:flutter/material.dart';
+import 'package:login3/models/Favorito.dart';
+import 'package:login3/models/databaseHelper.dart';
+
+class FavoritosPage extends StatefulWidget {
+  @override
+  _FavoritosPageState createState() => _FavoritosPageState();
+}
+
+class _FavoritosPageState extends State<FavoritosPage> {
+  List<Favorito> _favoritos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoritos();
+  }
+
+  void _loadFavoritos() async {
+    List<Favorito> favoritos = await DatabaseHelper.instance.getAllFavoritos();
+    setState(() {
+      _favoritos = favoritos;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Favoritos'),
+      ),
+      body: ListView.builder(
+        itemCount: _favoritos.length,
+        itemBuilder: (context, index) {
+          Favorito favorito = _favoritos[index];
+          return ListTile(
+            title: Text(favorito.title),
+            // Puedes agregar más detalles según sea necesario.
+          );
+        },
+      ),
+    );
+  }
+}

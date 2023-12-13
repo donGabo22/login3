@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:login3/card_swiper.dart';
+import 'package:login3/models/Favorito.dart';
+import 'package:login3/models/databaseHelper.dart';
 import 'package:login3/models/meal.dart';
 import 'package:login3/recipe_detail_screen.dart';
 import 'package:login3/recipe_list_page.dart';
+import 'package:login3/favoritos_page.dart';  // Agregamos la importación de la nueva página
 import 'package:login3/services/auth_services.dart';
 import 'package:login3/services/meal_service.dart';
 import 'package:login3/services/services.dart';
@@ -105,21 +108,52 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           if (pageIndex == 1)
             Expanded(
-              child: RecipeListPage(),
+          child: RecipeListPage(),
             ),
           if (pageIndex == 2)
-            const Text('Page 3: Aquí debería abrir un list view con mis favoritos'),
+            Expanded(
+              child: FavoritosPage(),  // Usamos la nueva página FavoritosPage
+            ),
         ],
       ),
     );
   }
 
-  void _navigateToRecipeDetail(BuildContext context, Meal meal) {
+   void _navigateToRecipeDetail(BuildContext context, Meal meal) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => RecipeDetailScreen(meal: meal),
       ),
-    );
+    ).then((value) {
+      if (value != null && value is bool && value) {
+        _saveToFavorites(meal);
+      }
+    });
+  }
+
+  void _saveToFavorites(Meal meal) async {
+    try {
+      Favorito favorito = Favorito(
+        mealId: meal.id,
+        title: meal.title,
+        thumbnail: meal.thumbnail,
+      );
+
+      int result = await DatabaseHelper.instance.insert(favorito);
+      if (result > 0) {
+        print('Receta guardada como favorita');
+      } else {
+        print('Error al guardar la receta como favorita');
+      }
+    } catch (e) {
+      print('Error al guardar la receta como favorita: $e');
+    }
+  }
+
+  void _viewFavorites() async {
+    List<Favorito> favoritos = await DatabaseHelper.instance.getAllFavoritos();
+    // Puedes imprimir los favoritos o mostrarlos en un ListView.
+    print('Favoritos: $favoritos');
   }
 }
