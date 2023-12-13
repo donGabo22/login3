@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:login3/card_swiper.dart';
 import 'package:login3/models/Favorito.dart';
-import 'package:login3/models/databaseHelper.dart';
+import 'package:login3/models/database_helper.dart';
 import 'package:login3/models/meal.dart';
 import 'package:login3/recipe_detail_screen.dart';
 import 'package:login3/recipe_list_page.dart';

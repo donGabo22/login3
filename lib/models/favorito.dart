@@ -1,25 +1,3 @@
-// // Favorito.dart
-// class Favorito {
-//   final int id;
-//   final String mealId;
-//   final String title;
-//   final String thumbnail;
-
-//   Favorito({required this.id, required this.mealId, required this.title, required this.thumbnail});
-
-//   Map<String, dynamic> toMap() {
-//     return {
-//       'id': id,
-//       'mealId': mealId,
-//       'title': title,
-//       'thumbnail': thumbnail,
-//     };
-//   }
-// }
-
-
-// favorito.dart
-
 class Favorito {
   int? id; // id de la fila en la base de datos
   late String mealId;

@@ -138,3 +138,61 @@ class _RecipeListPageState extends State<RecipeListPage> {
     );
   }
 }
+
+// recipe_list_page.dartimport 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
+// import 'package:login3/models/meal.dart';
+// import 'package:login3/services/meal_service.dart';
+
+// class RecipeListPage extends StatefulWidget {
+//   final Function(Meal) onRecipeSelected;
+
+//   RecipeListPage({required this.onRecipeSelected});
+
+//   @override
+//   _RecipeListPageState createState() => _RecipeListPageState();
+// }
+
+// class _RecipeListPageState extends State<RecipeListPage> {
+//   final MealService _mealService = MealService();
+//   List<Meal> _meals = [];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadMeals();
+//   }
+
+//   void _loadMeals() async {
+//     try {
+//       final meals = await _mealService.getRandomMealsBatch(20);
+//       setState(() {
+//         _meals = meals;
+//       });
+//     } catch (e) {
+//       print('Error loading meals: $e');
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Recetas'),
+//       ),
+//       body: ListView.builder(
+//         itemCount: _meals.length,
+//         itemBuilder: (context, index) {
+//           Meal meal = _meals[index];
+//           return ListTile(
+//             title: Text(meal.title),
+//             subtitle: Text(meal.category),
+//             onTap: () {
+//               widget.onRecipeSelected(meal);
+//             },
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
