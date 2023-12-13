@@ -73,6 +73,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
             style: TextStyle(
               fontSize: 24.0,
               fontWeight: FontWeight.bold,
+              color: Colors.brown, // Color del texto
             ),
           ),
           const SizedBox(height: 8.0),
@@ -82,7 +83,10 @@ class _RecipeListPageState extends State<RecipeListPage> {
                 .map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text(value),
+                child: Text(
+                  value,
+                  style: TextStyle(color: Colors.brown), // Color del texto del DropdownButton
+                ),
               );
             }).toList(),
             onChanged: (String? newValue) {
@@ -96,26 +100,39 @@ class _RecipeListPageState extends State<RecipeListPage> {
               ? Expanded(
                   child: ListView(
                     children: _meals.map((meal) {
-                      return ListTile(
-                        contentPadding: EdgeInsets.symmetric(vertical: 8.0),
-                        title: Text(meal.title),
-                        subtitle: Text(meal.category),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.network(
-                            meal.thumbnail,
-                            height: 80.0,
-                            width: 80.0,
+                      return Card(
+                        margin: EdgeInsets.all(8.0),
+                        elevation: 4.0,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                          title: Text(meal.title),
+                          subtitle: Text(meal.category),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              meal.thumbnail,
+                              height: 80.0,
+                              width: 80.0,
+                            ),
                           ),
+                          onTap: () {
+                            _navigateToRecipeDetail(meal);
+                          },
                         ),
-                        onTap: () {
-                          _navigateToRecipeDetail(meal);
-                        },
                       );
                     }).toList(),
                   ),
                 )
-              : const Text('No se encontraron recetas.'),
+              : Center(
+                  child: Text(
+                    'No se encontraron recetas.',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
         ],
       ),
     );

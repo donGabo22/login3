@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:login3/card_swiper.dart';
 import 'package:login3/models/meal.dart';
+import 'package:login3/recipe_detail_screen.dart';
 import 'package:login3/recipe_list_page.dart';
 import 'package:login3/services/auth_services.dart';
 import 'package:login3/services/meal_service.dart';
@@ -73,9 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Recetas',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.search),
-            icon: Icon(Icons.school_outlined),
-            label: 'Buscar',
+            selectedIcon: Icon(Icons.favorite),
+            icon: Icon(Icons.favorite_outlined),
+            label: 'Favoritos',
           ),
         ],
       ),
@@ -84,26 +85,40 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPage(int pageIndex) {
     return Container(
-      color: pageIndex == 0 ? Colors.orange : (pageIndex == 1 ? Colors.orange : Colors.blue),
-      alignment: Alignment.center,
+      color: pageIndex == 0 ? Colors.orange : (pageIndex == 1 ? Colors.white : Colors.orange),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (pageIndex == 0)
-            Expanded(
-              child: Column(
-                children: [
-                  CardSwiper(meals: _randomMeals),
-                ],
-              ),
+            Column(
+              children: [
+                const SizedBox(height: 16.0),
+                const Text(
+                  'Bienvenido',
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                CardSwiper(meals: _randomMeals),
+              ],
             ),
           if (pageIndex == 1)
             Expanded(
               child: RecipeListPage(),
             ),
           if (pageIndex == 2)
-            const Text('Page 3: Aquí debería abrir un buscador y filtros'),
+            const Text('Page 3: Aquí debería abrir un list view con mis favoritos'),
         ],
+      ),
+    );
+  }
+
+  void _navigateToRecipeDetail(BuildContext context, Meal meal) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecipeDetailScreen(meal: meal),
       ),
     );
   }

@@ -8,7 +8,8 @@ class MealService {
   Future<List<Meal>> getMealsByCategory({
     required String category,
   }) async {
-    final response = await http.get(Uri.parse('$apiUrl/filter.php?c=$category'));
+    final response =
+        await http.get(Uri.parse('$apiUrl/filter.php?c=$category'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -68,7 +69,8 @@ class MealService {
 
   Future<Meal> getMealById(String mealId) async {
     try {
-      final response = await http.get(Uri.parse('$apiUrl/lookup.php?i=$mealId'));
+      final response =
+          await http.get(Uri.parse('$apiUrl/lookup.php?i=$mealId'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -80,7 +82,8 @@ class MealService {
           throw Exception('Meal not found');
         }
       } else {
-        print('Failed to load meal details. Status Code: ${response.statusCode}');
+        print(
+            'Failed to load meal details. Status Code: ${response.statusCode}');
         print('Error body: ${response.body}');
         throw Exception('Failed to load meal details');
       }
@@ -128,7 +131,8 @@ class MealService {
           throw Exception('Meal of the day not found');
         }
       } else {
-        print('Failed to load meal of the day. Status Code: ${response.statusCode}');
+        print(
+            'Failed to load meal of the day. Status Code: ${response.statusCode}');
         print('Error body: ${response.body}');
         throw Exception('Failed to load meal of the day');
       }
@@ -140,17 +144,35 @@ class MealService {
 
   Future<List<Meal>> getRandomMealsBatch(int count) async {
     try {
-      final response = await http.get(Uri.parse('$apiUrl/random.php?limit=$count'));
+      final Set<String> uniqueMealIds = {};
+      final List<Meal> randomMeals = [];
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        final List<dynamic> meals = data['meals'];
-        return meals.map((meal) => Meal.fromJson(meal)).toList();
-      } else {
-        print('Failed to load random meals. Status Code: ${response.statusCode}');
-        print('Error body: ${response.body}');
-        throw Exception('Failed to load random meals');
+      while (uniqueMealIds.length < count) {
+        final response = await http.get(Uri.parse('$apiUrl/random.php'));
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = json.decode(response.body);
+          final List<dynamic> meals = data['meals'];
+
+          for (var mealData in meals) {
+            final Meal meal = Meal.fromJson(mealData);
+            if (!uniqueMealIds.contains(meal.id)) {
+              randomMeals.add(meal);
+              uniqueMealIds.add(meal.id);
+              print('Added meal: ${meal.title} (${meal.id})');
+            } else {
+              print('Skipped duplicate meal: ${meal.title} (${meal.id})');
+            }
+          }
+        } else {
+          print(
+              'Failed to load random meals. Status Code: ${response.statusCode}');
+          print('Error body: ${response.body}');
+          throw Exception('Failed to load random meals');
+        }
       }
+
+      return randomMeals;
     } catch (e) {
       print('Error: $e');
       throw Exception('Failed to load random meals');
