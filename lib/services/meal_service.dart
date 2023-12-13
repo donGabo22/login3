@@ -67,6 +67,22 @@ class MealService {
     }
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   Future<Meal> getMealById(String mealId) async {
     try {
       final response =
@@ -92,6 +108,38 @@ class MealService {
       throw Exception('Failed to load meal details');
     }
   }
+
+  Future<Meal> getMealById2(String mealId) async {
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/lookup.php?i=$mealId'));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> meals = data['meals'];
+
+        if (meals.isNotEmpty) {
+          return Meal.fromMap({'id': meals[0]['idMeal']});
+        } else {
+          throw Exception('Meal not found');
+        }
+      } else {
+        print('Failed to load meal details. Status Code: ${response.statusCode}');
+        print('Error body: ${response.body}');
+        throw Exception('Failed to load meal details');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to load meal details');
+    }
+  }
+
+
+
+
+
+
+
+
 
   Future<List<Meal>> getLatestMeals() async {
     try {

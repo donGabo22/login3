@@ -1,5 +1,8 @@
+import 'package:login3/models/favorite_meal_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -25,34 +28,41 @@ class DatabaseHelper {
   Future<void> _createDatabase(Database db, int version) async {
     await db.execute('''
       CREATE TABLE favorite_meals (
-        id TEXT PRIMARY KEY,
-        title TEXT,
-        thumbnail TEXT
+        id TEXT PRIMARY KEY
       )
     ''');
   }
 
-  Future<bool> insertFavoriteMeal(FavoriteMealModel meal) async {
+  Future<bool> insertFavoriteMeal(String id) async {
     final Database db = await database;
     try {
       await db.insert(
         'favorite_meals',
-        meal.toMap(),
+        {'id': id},
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
+      print('Inserted favorite meal with id: $id');
       return true;
     } catch (e) {
+      print('Error inserting favorite meal: $e');
       return false;
     }
   }
 
-  Future<List<FavoriteMealModel>> getFavoriteMeals() async {
-    final Database db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('favorite_meals');
-    return List.generate(maps.length, (i) {
-      return FavoriteMealModel.fromMap(maps[i]);
+Future<List<FavoriteMealModel>> getFavoriteMeals() async {
+  final Database db = await database;
+  final List<Map<String, dynamic>> maps = await db.query('favorite_meals');
+  return List.generate(maps.length, (i) {
+    final String id = maps[i]['id'].toString();
+    print('Type of ID in database: ${id.runtimeType}');
+    return FavoriteMealModel.fromMap({
+      'id': id,
     });
-  }
+  });
+}
+
+
+
 
   Future<bool> deleteFavoriteMeal(String id) async {
     final Database db = await database;
@@ -60,35 +70,21 @@ class DatabaseHelper {
       await db.delete('favorite_meals', where: 'id = ?', whereArgs: [id]);
       return true;
     } catch (e) {
+      print('Error deleting favorite meal: $e');
       return false;
     }
   }
-}
 
-class FavoriteMealModel {
-  final String id;
-  final String title;
-  final String thumbnail;
+  Future<Map<String, dynamic>> getMealDetailsEnFavoritos(String id) async {
+    final response = await http.get(Uri.parse('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$id'));
 
-  FavoriteMealModel({
-    required this.id,
-    required this.title,
-    required this.thumbnail,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'thumbnail': thumbnail,
-    };
-  }
-
-  factory FavoriteMealModel.fromMap(Map<String, dynamic> map) {
-    return FavoriteMealModel(
-      id: map['id'],
-      title: map['title'],
-      thumbnail: map['thumbnail'],
-    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data;
+    } else {
+      print('Failed to load meal details. Status Code: ${response.statusCode}');
+      print('Error body: ${response.body}');
+      throw Exception('Failed to load meal details');
+    }
   }
 }

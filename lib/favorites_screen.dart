@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login3/services/database_helper.dart';
+import 'package:login3/models/favorite_meal_model.dart';
 
 class FavoritesScreen extends StatefulWidget {
   @override
@@ -54,7 +55,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               itemBuilder: (context, index) {
                 FavoriteMealModel favoriteMeal = _favoriteMeals[index];
                 return ListTile(
-                  title: Text(favoriteMeal.title),
+                  title: Text("Favoritos"),
                   subtitle: Text('ID: ${favoriteMeal.id}'),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
@@ -77,5 +78,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             ),
     );
   }
-}
 
+  @override
+  void dispose() {
+    super.dispose();
+    print('Disposing _FavoritesScreenState');
+  }
+}
