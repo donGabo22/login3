@@ -17,31 +17,37 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'favorite_meals.db');
+    String path = join(await getDatabasesPath(), 'favorite_meals_v2.db'); // Cambia el nombre de la base de datos
     return await openDatabase(
       path,
-      version: 1,
+      version: 1, // Cambia la versión de vuelta a 1
       onCreate: _createDatabase,
     );
   }
 
   Future<void> _createDatabase(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE favorite_meals (
-        id TEXT PRIMARY KEY
+      CREATE TABLE IF NOT EXISTS favorite_meals (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        thumbnailUrl TEXT
       )
     ''');
   }
 
-  Future<bool> insertFavoriteMeal(String id) async {
+  Future<bool> insertFavoriteMeal(String id, String title, String thumbnailUrl) async {
     final Database db = await database;
     try {
       await db.insert(
         'favorite_meals',
-        {'id': id},
+        {
+          'id': id,
+          'title': title,
+          'thumbnailUrl': thumbnailUrl,
+        },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      print('Inserted favorite meal with id: $id');
+      print('Inserted favorite meal with id: $id, title: $title, thumbnailUrl: $thumbnailUrl');
       return true;
     } catch (e) {
       print('Error inserting favorite meal: $e');
@@ -49,20 +55,23 @@ class DatabaseHelper {
     }
   }
 
-Future<List<FavoriteMealModel>> getFavoriteMeals() async {
-  final Database db = await database;
-  final List<Map<String, dynamic>> maps = await db.query('favorite_meals');
-  return List.generate(maps.length, (i) {
-    final String id = maps[i]['id'].toString();
-    print('Type of ID in database: ${id.runtimeType}');
-    return FavoriteMealModel.fromMap({
-      'id': id,
+  Future<List<FavoriteMealModel>> getFavoriteMeals() async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('favorite_meals');
+    return List.generate(maps.length, (i) {
+      final String id = maps[i]['id'].toString();
+      final String title = maps[i]['title'].toString();
+      final String thumbnailUrl = maps[i]['thumbnailUrl'].toString();
+      print('Type of ID in database: ${id.runtimeType}');
+      print('Type of title in database: ${title.runtimeType}');
+      print('Type of thumbnailUrl in database: ${thumbnailUrl.runtimeType}');
+      return FavoriteMealModel(
+        id: id,
+        title: title,
+        thumbnailUrl: thumbnailUrl,
+      );
     });
-  });
-}
-
-
-
+  }
 
   Future<bool> deleteFavoriteMeal(String id) async {
     final Database db = await database;

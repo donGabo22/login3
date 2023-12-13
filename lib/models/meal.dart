@@ -49,7 +49,7 @@ class Meal {
 
   Future<bool> toggleFavorite() async {
     isFavorite = !isFavorite;
-    return await DatabaseHelper.instance.insertFavoriteMeal(id);
+    return await DatabaseHelper.instance.insertFavoriteMeal(id,title,thumbnail);
   }
 
   Meal.fromMap(Map<String, dynamic> map)

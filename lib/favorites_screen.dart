@@ -55,8 +55,41 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               itemBuilder: (context, index) {
                 FavoriteMealModel favoriteMeal = _favoriteMeals[index];
                 return ListTile(
-                  title: Text("Favoritos"),
-                  subtitle: Text('ID: ${favoriteMeal.id}'),
+                  title: Text(favoriteMeal.title),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('ID: ${favoriteMeal.id}'),
+                      FutureBuilder<Map<String, dynamic>>(
+                        future: DatabaseHelper.instance.getMealDetailsEnFavoritos(favoriteMeal.id),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Icon(Icons.error); // Manejar el error de alguna manera
+                           
+                          } else {
+                          // Paso 3: Imprime el mapa completo de datos recuperados
+                          print('Data from database: ${snapshot.data}');
+                            print('strMealThumb: ${snapshot.data?['strMealThumb']}');
+                            String thumbnailUrl = snapshot.data?['strMealThumb'] ?? '';
+
+                            if (thumbnailUrl.isNotEmpty) {
+                              return Column(
+                                children: [
+                                  Image.network(thumbnailUrl, width: 50, height: 50),
+                                  Text('Title: ${snapshot.data?['strMeal'] ?? ''}'),
+                                ],
+                              );
+                            } else {
+                              // Manejar el caso en que la URL de la imagen es nula o vacía
+                              return Text('No hay imagen disponible todavia jej');
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
@@ -77,11 +110,5 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               ),
             ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    print('Disposing _FavoritesScreenState');
   }
 }
