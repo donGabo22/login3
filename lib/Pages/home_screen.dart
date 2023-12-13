@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login3/card_swiper.dart';
+import 'package:login3/favorites_screen.dart';
 import 'package:login3/models/meal.dart';
 import 'package:login3/recipe_detail_screen.dart';
 import 'package:login3/recipe_list_page.dart';
@@ -108,7 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: RecipeListPage(),
             ),
           if (pageIndex == 2)
-            const Text('Page 3: Aquí debería abrir un list view con mis favoritos'),
+            Expanded(
+              child: FavoritesScreen(), // Reemplaza con tu widget real de favoritos
+            ),
         ],
       ),
     );

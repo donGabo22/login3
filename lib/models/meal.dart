@@ -1,3 +1,5 @@
+import 'package:login3/services/database_helper.dart';
+
 class Meal {
   final String id;
   final String title;
@@ -6,6 +8,7 @@ class Meal {
   final String instructions;
   final String thumbnail;
   final List<String> ingredients;
+  bool isFavorite;
 
   Meal({
     required this.id,
@@ -15,9 +18,9 @@ class Meal {
     required this.instructions,
     required this.thumbnail,
     required this.ingredients,
+    required this.isFavorite,
   });
 
-  // Constructor sin argumentos
   Meal.empty()
       : id = '',
         title = '',
@@ -25,7 +28,8 @@ class Meal {
         area = '',
         instructions = '',
         thumbnail = '',
-        ingredients = [];
+        ingredients = [],
+        isFavorite = false;
 
   factory Meal.fromJson(Map<String, dynamic> json) => Meal(
         id: json['idMeal'] ?? '',
@@ -38,6 +42,13 @@ class Meal {
           20,
           (index) => json['strIngredient${index + 1}'] ?? '',
         ).where((ingredient) => ingredient.isNotEmpty)),
+        isFavorite: false,
       );
-}
 
+  Future<bool> toggleFavorite() async {
+    isFavorite = !isFavorite;
+    return await DatabaseHelper.instance.insertFavoriteMeal(
+      FavoriteMeal(id: id, title: title, thumbnail: thumbnail),
+    );
+  }
+}

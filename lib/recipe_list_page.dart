@@ -38,15 +38,6 @@ class _RecipeListPageState extends State<RecipeListPage> {
     }
   }
 
-  void _filterByCategory(String category) {
-    setState(() {
-      _selectedCategory = category;
-      if (_selectedCategory != 'Random') {
-        _loadMeals();
-      }
-    });
-  }
-
   void _navigateToRecipeDetail(Meal meal) async {
     try {
       Meal detailedMeal = await _mealService.getMealById(meal.id);
@@ -68,24 +59,30 @@ class _RecipeListPageState extends State<RecipeListPage> {
       child: Column(
         children: [
           const SizedBox(height: 16.0),
-          const Text(
-            '¿Buscas algo en especial?',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.brown, // Color del texto
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                '¿Buscas algo en especial?',
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.brown, // Color del texto
+                ),
+              ),
+              // Otras acciones según sea necesario
+            ],
           ),
           const SizedBox(height: 8.0),
           DropdownButton<String>(
             value: _selectedCategory,
-            items: <String>['Beef', 'Chicken', 'Dessert', 'Seafood']
+            items: <String>['Beef', 'Chicken', 'Dessert', 'Seafood', 'Random']
                 .map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(
                   value,
-                  style: TextStyle(color: Colors.brown), // Color del texto del DropdownButton
+                  style: const TextStyle(color: Colors.brown), // Color del texto del DropdownButton
                 ),
               );
             }).toList(),
@@ -101,10 +98,10 @@ class _RecipeListPageState extends State<RecipeListPage> {
                   child: ListView(
                     children: _meals.map((meal) {
                       return Card(
-                        margin: EdgeInsets.all(8.0),
+                        margin: const EdgeInsets.all(8.0),
                         elevation: 4.0,
                         child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
                           title: Text(meal.title),
                           subtitle: Text(meal.category),
                           leading: ClipRRect(
@@ -123,7 +120,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
                     }).toList(),
                   ),
                 )
-              : Center(
+              : const Center(
                   child: Text(
                     'No se encontraron recetas.',
                     style: TextStyle(
@@ -136,5 +133,12 @@ class _RecipeListPageState extends State<RecipeListPage> {
         ],
       ),
     );
+  }
+
+  void _filterByCategory(String category) {
+    setState(() {
+      _selectedCategory = category;
+      _loadMeals();
+    });
   }
 }
