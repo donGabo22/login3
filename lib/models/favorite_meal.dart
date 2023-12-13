@@ -1,9 +1,9 @@
-class FavoriteMeal {
+class FavoriteMealModel {
   final int id;
   final String title;
   final String thumbnail;
 
-  FavoriteMeal({
+  FavoriteMealModel({
     required this.id,
     required this.title,
     required this.thumbnail,
@@ -17,8 +17,8 @@ class FavoriteMeal {
     };
   }
 
-  factory FavoriteMeal.fromMap(Map<String, dynamic> map) {
-    return FavoriteMeal(
+  factory FavoriteMealModel.fromMap(Map<String, dynamic> map) {
+    return FavoriteMealModel(
       id: map['id'],
       title: map['title'],
       thumbnail: map['thumbnail'],

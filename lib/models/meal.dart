@@ -48,7 +48,7 @@ class Meal {
   Future<bool> toggleFavorite() async {
     isFavorite = !isFavorite;
     return await DatabaseHelper.instance.insertFavoriteMeal(
-      FavoriteMeal(id: id, title: title, thumbnail: thumbnail),
+      FavoriteMealModel(id: id, title: title, thumbnail: thumbnail),
     );
   }
 }

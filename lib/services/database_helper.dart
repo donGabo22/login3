@@ -32,7 +32,7 @@ class DatabaseHelper {
     ''');
   }
 
-  Future<bool> insertFavoriteMeal(FavoriteMeal meal) async {
+  Future<bool> insertFavoriteMeal(FavoriteMealModel meal) async {
     final Database db = await database;
     try {
       await db.insert(
@@ -46,11 +46,11 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<FavoriteMeal>> getFavoriteMeals() async {
+  Future<List<FavoriteMealModel>> getFavoriteMeals() async {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('favorite_meals');
     return List.generate(maps.length, (i) {
-      return FavoriteMeal.fromMap(maps[i]);
+      return FavoriteMealModel.fromMap(maps[i]);
     });
   }
 
@@ -65,12 +65,12 @@ class DatabaseHelper {
   }
 }
 
-class FavoriteMeal {
+class FavoriteMealModel {
   final String id;
   final String title;
   final String thumbnail;
 
-  FavoriteMeal({
+  FavoriteMealModel({
     required this.id,
     required this.title,
     required this.thumbnail,
@@ -84,8 +84,8 @@ class FavoriteMeal {
     };
   }
 
-  factory FavoriteMeal.fromMap(Map<String, dynamic> map) {
-    return FavoriteMeal(
+  factory FavoriteMealModel.fromMap(Map<String, dynamic> map) {
+    return FavoriteMealModel(
       id: map['id'],
       title: map['title'],
       thumbnail: map['thumbnail'],

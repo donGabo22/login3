@@ -85,35 +85,37 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPage(int pageIndex) {
+    Widget page;
+    switch (pageIndex) {
+      case 0:
+        page = Column(
+          children: [
+            const SizedBox(height: 16.0),
+            const Text(
+              'Bienvenido',
+              style: TextStyle(
+                fontSize: 30.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            CardSwiper(meals: _randomMeals),
+          ],
+        );
+        break;
+      case 1:
+        page = RecipeListPage();
+        break;
+      case 2:
+        page = FavoritesScreen();
+        break;
+      default:
+        page = Container(); // Puedes cambiar esto según sea necesario
+    }
+
     return Container(
       color: pageIndex == 0 ? Colors.orange : (pageIndex == 1 ? Colors.white : Colors.orange),
-      child: Column(
-        children: [
-          if (pageIndex == 0)
-            Column(
-              children: [
-                const SizedBox(height: 16.0),
-                const Text(
-                  'Bienvenido',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                CardSwiper(meals: _randomMeals),
-              ],
-            ),
-          if (pageIndex == 1)
-            Expanded(
-              child: RecipeListPage(),
-            ),
-          if (pageIndex == 2)
-            Expanded(
-              child: FavoritesScreen(), // Reemplaza con tu widget real de favoritos
-            ),
-        ],
-      ),
+      child: page,
     );
   }
 

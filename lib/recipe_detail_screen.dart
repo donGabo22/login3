@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:login3/models/meal.dart';
-import 'package:login3/services/database_helper.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final Meal meal;
@@ -12,15 +11,7 @@ class RecipeDetailScreen extends StatefulWidget {
 }
 
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
-  late bool isFavorite;
-  late DatabaseHelper _databaseHelper;
-
-  @override
-  void initState() {
-    super.initState();
-    isFavorite = widget.meal.isFavorite;
-    _databaseHelper = DatabaseHelper.instance;
-  }
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +25,22 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               isFavorite ? Icons.favorite : Icons.favorite_border,
               color: Colors.red,
             ),
-            onPressed: _toggleFavorite,
-          ),
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              _deleteFromFavorites(context);
+            onPressed: () async {
+              bool success = await widget.meal.toggleFavorite();
+              setState(() {
+                isFavorite = success;
+              });
+
+              // Mostrar mensaje de confirmación
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(isFavorite
+                        ? 'Añadido a favoritos'
+                        : 'Eliminado de favoritos'),
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -161,27 +162,5 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
         ),
       ),
     );
-  }
-
-  void _toggleFavorite() async {
-    bool success = await widget.meal.toggleFavorite();
-
-    setState(() {
-      isFavorite = widget.meal.isFavorite;
-    });
-
-    final snackBar = SnackBar(content: Text(success ? (isFavorite ? 'Añadido a favoritos' : 'Eliminado de favoritos') : 'Error al actualizar favoritos'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void _deleteFromFavorites(BuildContext context) async {
-    bool success = await _databaseHelper.deleteFavoriteMeal(widget.meal.id);
-
-    final snackBar = SnackBar(content: Text(success ? 'Eliminado de favoritos' : 'Error al eliminar de favoritos'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-    if (success) {
-      Navigator.pop(context);
-    }
   }
 }
