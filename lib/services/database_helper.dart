@@ -65,6 +65,8 @@ class DatabaseHelper {
       print('Type of ID in database: ${id.runtimeType}');
       print('Type of title in database: ${title.runtimeType}');
       print('Type of thumbnailUrl in database: ${thumbnailUrl.runtimeType}');
+      print('Type of thumbnailUrl in database: ${thumbnailUrl.toString()}');
+
       return FavoriteMealModel(
         id: id,
         title: title,
@@ -84,16 +86,29 @@ class DatabaseHelper {
     }
   }
 
-  Future<Map<String, dynamic>> getMealDetailsEnFavoritos(String id) async {
-    final response = await http.get(Uri.parse('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$id'));
+Future<Map<String, dynamic>> getMealDetailsEnFavoritos(String mealId) async {
+  final Database db = await database;
+  final List<Map<String, dynamic>> maps = await db.query(
+    'favorite_meals',
+    where: 'id = ?',
+    whereArgs: [mealId],
+  );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      return data;
-    } else {
-      print('Failed to load meal details. Status Code: ${response.statusCode}');
-      print('Error body: ${response.body}');
-      throw Exception('Failed to load meal details');
-    }
+  if (maps.isNotEmpty) {
+    final Map<String, dynamic> mealDetails = {
+      'meals': [
+        {
+          'idMeal': maps[0]['id'],
+          'strMeal': maps[0]['title'],
+          'strImageSource': maps[0]['thumbnailUrl'],
+          // ... otras propiedades ...
+        }
+      ]
+    };
+    return mealDetails;
+  } else {
+    return {}; // o cualquier valor predeterminado que desees para indicar que no se encontraron detalles
   }
+}
+
 }

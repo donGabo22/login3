@@ -52,6 +52,9 @@ class _RecipeListPageState extends State<RecipeListPage> {
     }
   }
 
+
+  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,7 +79,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
           const SizedBox(height: 8.0),
           DropdownButton<String>(
             value: _selectedCategory,
-            items: <String>['Beef', 'Chicken', 'Dessert', 'Seafood', 'Random']
+            items: <String>['Beef', 'Chicken', 'Dessert', 'Seafood']
                 .map((String value) {
               return DropdownMenuItem<String>(
                 value: value,

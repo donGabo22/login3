@@ -62,14 +62,14 @@ class Meal {
         ingredients = [],
         isFavorite = map['isFavorite'] ?? false;
 
-
+}
   // Future<Map<String, dynamic>> getDetails() async {
   //   // Aquí puedes realizar la llamada a la API para obtener los detalles completos
   //   // Puedes usar el método existente en tu clase MealService o ajustarlo según tus necesidades
   //   // Por ejemplo:
   //   // return await MealService().getMealById(id);
   // }
-}
+
 
 
 
